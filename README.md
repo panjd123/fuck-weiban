@@ -9,8 +9,8 @@ playwright install
 
 国内用户可能会遇到网络问题，可以在执行 `playwright install` 前设置镜像加速：
 
-Windows: `set PLAYWRIGHT_DOWNLOAD_HOST=https://npmmirror.com/mirrors/playwright`
-Mac/Linux: `export PLAYWRIGHT_DOWNLOAD_HOST=https://npmmirror.com/mirrors/playwright`
+- Windows: `set PLAYWRIGHT_DOWNLOAD_HOST=https://npmmirror.com/mirrors/playwright`
+- Mac/Linux: `export PLAYWRIGHT_DOWNLOAD_HOST=https://npmmirror.com/mirrors/playwright`
 
 ### Run
 
