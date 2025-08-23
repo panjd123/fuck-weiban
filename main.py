@@ -3,6 +3,7 @@ import time
 from tqdm import tqdm
 from itertools import count
 import os.path as osp
+import re
 
 WAITING_SECS = 15 # s
 STATE_FILE = "state.json"
@@ -23,6 +24,146 @@ def millisecond_countdown(total_seconds: float, update_interval: float = 0.02):
             time.sleep(update_interval)
         pbar.n = pbar.total
 
+def find_uncompleted_modules(page):
+    """查找未完成的课程模块"""
+    print("查找未完成的课程模块...")
+    
+    # 查找所有课程模块
+    modules = page.query_selector_all(".van-collapse-item")
+    uncompleted_modules = []
+    
+    for module in modules:
+        try:
+            title_element = module.query_selector(".van-cell__title")
+            if not title_element:
+                continue
+                
+            # text = title_element.inner_text().strip()
+            text = title_element.inner_text().strip().replace('\n', ' ')
+            print(f"检查模块: {text}")
+            
+            # 匹配进度格式 "x/y"
+            numbers = re.findall(r'\d+', text)
+            if len(numbers) >= 2:
+                completed = int(numbers[0])
+                total = int(numbers[1])
+                
+                if completed < total:
+                    module_name = re.sub(r'\d+/\d+', '', text).strip()
+                    uncompleted_modules.append({
+                        'element': module.query_selector(".van-cell.van-cell--clickable"),
+                        'module': module,
+                        'name': module_name,
+                        'progress': f"{completed}/{total}"
+                    })
+                    print(f"未完成模块: {module_name} ({completed}/{total})")
+                else:
+                    module_name = re.sub(r'\d+/\d+', '', text).strip()
+                    print(f"已完成模块: {module_name} ({completed}/{total})")
+        except Exception as e:
+            print(f"检查模块时出错: {e}")
+    
+    print(f"找到 {len(uncompleted_modules)} 个未完成模块")
+    return uncompleted_modules
+
+def expand_module(page, module_data):
+    """展开课程模块"""
+    print(f"展开模块: {module_data['name']} {module_data['progress']}")
+    
+    try:
+        module_data['element'].click()
+        time.sleep(3)  # 等待展开动画
+        print("模块展开成功")
+        return True
+    except Exception as e:
+        print(f"模块展开失败: {e}")
+        return False
+
+def find_course_cards(page, module_element):
+    """查找模块中的课程卡片"""
+    print("查找课程卡片...")
+    
+    try:
+        content_area = module_element.query_selector(".van-collapse-item__content")
+        if not content_area:
+            print("未找到内容区域")
+            return []
+        
+        # 查找课程卡片
+        course_items = content_area.query_selector_all("li.img-texts-item")
+        cards = []
+        
+        for item in course_items:
+            try:
+                title_element = item.query_selector("h5.title")
+                title = title_element.inner_text().strip() if title_element else item.inner_text().strip()
+                
+                if title and len(title) > 3:  # 避免空标题或太短的标题
+                    cards.append({
+                        'element': item,
+                        'name': title
+                    })
+                    print(f"找到课程: {title}")
+            except Exception as e:
+                print(f"处理课程卡片时出错: {e}")
+        
+        print(f"找到 {len(cards)} 个课程卡片")
+        return cards
+        
+    except Exception as e:
+        print(f"查找课程卡片失败: {e}")
+        return []
+
+def click_first_course(page, card_data):
+    """点击第一个课程卡片"""
+    print(f"点击第一个课程: {card_data['name']}")
+    
+    try:
+        card_data['element'].click()
+        time.sleep(4)  # 等待页面跳转和iframe加载
+        print("课程点击成功")
+        return True
+    except Exception as e:
+        print(f"课程点击失败: {e}")
+        return False
+
+def find_and_enter_first_uncompleted_course(page):
+    """查找并进入第一个未完成的课程"""
+    print("开始查找第一个未完成的课程...")
+    
+    # 1. 查找未完成模块
+    modules = find_uncompleted_modules(page)
+    if not modules:
+        print("所有模块都已完成！")
+        return False
+    
+    # 2. 选择第一个未完成模块
+    first_module = modules[0]
+    print(f"\n选择第一个未完成模块: {first_module['name']} {first_module['progress']}")
+    
+    # 3. 展开模块
+    if not expand_module(page, first_module):
+        print("模块展开失败")
+        return False
+    
+    # 4. 查找课程卡片
+    cards = find_course_cards(page, first_module['module'])
+    if not cards:
+        print("未找到课程卡片")
+        return False
+    
+    # 5. 点击第一个课程
+    first_card = cards[0]
+    print(f"\n准备进入第一个课程: {first_card['name']}")
+    
+    if click_first_course(page, first_card):
+        print("成功进入第一个未完成的课程！")
+        print("自动处理课程...")
+        return True
+    else:
+        print("进入课程失败！")
+        return False
+
 def main():
     p = sync_playwright().start()
     browser = p.chromium.launch(headless=False)
@@ -33,8 +174,14 @@ def main():
     page = context.new_page()
     page.goto("https://weiban.mycourse.cn/")
 
-    input("请手动完成登录，并进入第一个未学习的课程，等待页面加载完成，完成后按任意键开始...")
+    input("\n请手动完成登录，等待页面加载完成，完成后按任意键开始...")
     context.storage_state(path=STATE_FILE)
+    
+    # 自动查找并进入第一个未完成的课程      
+    if not find_and_enter_first_uncompleted_course(page):
+        print("未能找到或进入未完成的课程")
+        input("按任意键退出...")
+        return
 
     try:
         for i in count(start=1):
