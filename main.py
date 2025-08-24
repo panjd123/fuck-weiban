@@ -29,13 +29,15 @@ def find_uncompleted_modules(page):
     print("查找未完成的课程模块...")
     
     # 查找所有课程模块
-    modules = page.query_selector_all(".van-collapse-item")
+    modules = page.locator(".van-collapse-item")
+    modules.first.wait_for()
     uncompleted_modules = []
     
-    for module in modules:
+    for i in range(modules.count()):
+        module = modules.nth(i)
         try:
-            title_element = module.query_selector(".van-cell__title")
-            if not title_element:
+            title_element = module.locator(".van-cell__title")
+            if not title_element.count():
                 continue
                 
             # text = title_element.inner_text().strip()
@@ -51,7 +53,7 @@ def find_uncompleted_modules(page):
                 if completed < total:
                     module_name = re.sub(r'\d+/\d+', '', text).strip()
                     uncompleted_modules.append({
-                        'element': module.query_selector(".van-cell.van-cell--clickable"),
+                        'element': module.locator(".van-cell.van-cell--clickable"),
                         'module': module,
                         'name': module_name,
                         'progress': f"{completed}/{total}"
@@ -72,7 +74,6 @@ def expand_module(page, module_data):
     
     try:
         module_data['element'].click()
-        time.sleep(3)  # 等待展开动画
         print("模块展开成功")
         return True
     except Exception as e:
@@ -84,18 +85,20 @@ def find_course_cards(page, module_element):
     print("查找课程卡片...")
     
     try:
-        content_area = module_element.query_selector(".van-collapse-item__content")
-        if not content_area:
+        content_area = module_element.locator(".van-collapse-item__content")
+        if not content_area.count():
             print("未找到内容区域")
             return []
         
         # 查找课程卡片
-        course_items = content_area.query_selector_all("li.img-texts-item")
+        course_items = content_area.first.locator("li.img-texts-item")
+        course_items.first.wait_for()
         cards = []
-        
-        for item in course_items:
+
+        for i in range(course_items.count()):
+            item = course_items.nth(i)
             try:
-                title_element = item.query_selector("h5.title")
+                title_element = item.locator("h5.title")
                 title = title_element.inner_text().strip() if title_element else item.inner_text().strip()
                 
                 if title and len(title) > 3:  # 避免空标题或太短的标题
@@ -120,7 +123,6 @@ def click_first_course(page, card_data):
     
     try:
         card_data['element'].click()
-        time.sleep(4)  # 等待页面跳转和iframe加载
         print("课程点击成功")
         return True
     except Exception as e:
@@ -179,13 +181,11 @@ def main():
     
     # 自动查找并进入第一个未完成的课程      
     if not find_and_enter_first_uncompleted_course(page):
-        print("未能找到或进入未完成的课程")
-        input("按任意键退出...")
-        return
+        input("未能找到或进入未完成的课程\n你可以手动进入第一节未完成的课程，完成后按任意键继续...")
 
     try:
         for i in count(start=1):
-            millisecond_countdown(WAITING_SECS - 5 if i == 1 else WAITING_SECS)
+            millisecond_countdown(WAITING_SECS)
             title = page.title()
             print(f"第 {i} 课: {title} ", end="")
             frame = page.frame_locator("#app > div > div > iframe").locator("body")
@@ -193,9 +193,9 @@ def main():
             page.get_by_text("下一课").click()
             print(f"完成")
     except TimeoutError:
-        print("所有课程已完成")
-        input("按任意键退出")
-        print("点个 star 谢谢喵：")
+        print(f"所有课程已完成")
+        print("点个 star 谢谢喵：https://github.com/panjd123/fuck-weiban")
+        input("按任意键退出...")
 
 if __name__ == "__main__":
     main()
