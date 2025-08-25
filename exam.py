@@ -23,18 +23,25 @@ def get_answer(quest_category, question, choices):
         quest_category=quest_category, question=question, choices=choices
     )
     print(user_content)
-    response = client.chat.completions.create(
-        model="glm-4.5-flash",
-        messages=[
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": user_content},
-        ],
-        thinking={
-            "type": os.getenv("thinking", "disabled").lower()
-        },
-        temperature=0  # 避免随机性
-    )
-    answer = response.choices[0].message.content.strip()
+    try:
+        response = client.chat.completions.create(
+            model="glm-4.5-flash",
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_content},
+            ],
+            thinking={
+                "type": os.getenv("thinking", "disabled").lower()
+            },
+            temperature=0  # 避免随机性
+        )
+        answer = response.choices[0].message.content.strip()
+    except Exception as e:
+        print("使用 GLM-4.5-flash 回答问题时出错:", e)
+        if os.getenv("on_error", "first") == "first":
+            answer = "A"
+        else:
+            answer = input("请手动输入答案（例如 A 或 ACD）: ").strip()
     print(answer)
     letters = re.findall(r"[A-D]", answer.upper())
     mapping = {"A": 0, "B": 1, "C": 2, "D": 3}

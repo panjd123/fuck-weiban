@@ -16,9 +16,7 @@ playwright install
 - Windows: `set PLAYWRIGHT_DOWNLOAD_HOST=https://npmmirror.com/mirrors/playwright`
 - Mac/Linux: `export PLAYWRIGHT_DOWNLOAD_HOST=https://npmmirror.com/mirrors/playwright`
 
-### Run
-
-#### 刷课脚本
+### 刷课脚本
 
 ```bash
 python course.py
@@ -30,7 +28,17 @@ python course.py
 4. 等待脚本自动结束
 5. 如果遇到问题，可以尝试改大代码里的 `WAITING_SECS`
 
-#### 考试脚本（新）
+#### 参考资料
+
+[利用js快速完成大学生新生安全教育课程 by Honyelchak](https://blog.csdn.net/m0_38072683/article/details/118878085)
+
+#### 提醒
+
+1. 刷课间隔过快，请求会被系统拒绝，我的测试是 10s 一定会被拒绝，15s 总是能通过，如果你遇到问题，可以考虑修改代码改大此值
+3. 系统不允许重复登录，脚本运行时不要再打开这个网站
+4. 默认会保存 cookie 等信息在 `state.json` 文件里，请注意隐私保护
+
+### 考试脚本（新）
 
 该脚本会调用智谱轻言GLM-4.5-flash大模型来自动选择正确的答案，其是免费的，但你需要自己注册获取 API_KEY，以下是简易流程
 
@@ -55,12 +63,20 @@ cp .env.example .env
 
 ```
 ZAI_API_KEY=your_zai_api_key
-thinking=disabled
+thinking=enabled
+on_error=first
 ```
 
-你需要替换 `your_zai_api_key` 为你刚刚获取到的 API KEY。
+**ZAI_API_KEY**：
+- 说明：你需要替换 `your_zai_api_key` 为你刚刚获取到的 API KEY。
 
-另外，GLM-4.5-flash 可以开启或关闭思维链（深度思考），实测思考模式的耗时是非思考模式的 5-10 倍，但是开启思维链回答的正确率会高一点，非思考有考试不通过的可能，如果你不着急，我建议开启思考，即将 `disabled` 改为 `enabled`。
+**thinking**：
+- 可选项：`enabled` 或 `disabled`
+- 说明：GLM-4.5-flash 可以开启或关闭思维链（深度思考），实测思考模式的耗时是非思考模式的 5-10 倍，但是开启思维链回答的正确率会高一点，非思考有考试不通过的可能。
+
+**on_error**:
+- 可选项：`first` 或 `manual`
+- 说明：有时候，考试问题会涉及一些违禁词，如“翻墙”，此时大模型会拒绝回答并报错，此时有两种处理办法，选择 `first` 会直接选择第一个选项，选择 `manual` 会让用户输入答案。推荐选择 `first`，相信大模型错一题应该还是能过的（大概）。
 
 ----------------------------------------------
 
@@ -74,16 +90,6 @@ python exam.py
 2. 观察终端，等待其输出"xxxx，按任意键开始..."字样的指示后再开始操作
 3. 按照指示操作后，回到终端，输入回车
 4. 等待脚本自动结束
-
-### 参考资料
-
-[利用js快速完成大学生新生安全教育课程 by Honyelchak](https://blog.csdn.net/m0_38072683/article/details/118878085)
-
-### 提醒
-
-1. 刷课间隔过快，请求会被系统拒绝，我的测试是 10s 一定会被拒绝，15s 总是能通过，如果你遇到问题，可以考虑修改代码改大此值
-3. 系统不允许重复登录，脚本运行时不要再打开这个网站
-4. 默认会保存 cookie 等信息在 `state.json` 文件里，请注意隐私保护
 
 ### Star History
 
