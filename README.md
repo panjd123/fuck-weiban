@@ -3,6 +3,7 @@
 ### Installation
 
 ```bash
+git clone https://github.com/panjd123/fuck-weiban.git
 pip install playwright tqdm
 playwright install
 ```
@@ -11,6 +12,14 @@ playwright install
 
 - Windows: `set PLAYWRIGHT_DOWNLOAD_HOST=https://npmmirror.com/mirrors/playwright`
 - Mac/Linux: `export PLAYWRIGHT_DOWNLOAD_HOST=https://npmmirror.com/mirrors/playwright`
+
+如果运行 `playerwright install` 提示无playerwright命令，可以使用：
+
+```bash
+python -m playerwright install
+```
+
+使用替代命令前，请确保你的电脑上安装了python，且没有多个不同版本的python导致冲突。
 
 ### Run
 
