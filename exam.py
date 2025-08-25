@@ -79,3 +79,6 @@ def main():
 
     print("点个 star 谢谢喵：https://github.com/panjd123/fuck-weiban")
     input("按任意键退出...")
+
+if __name__ == "__main__":
+    main()
