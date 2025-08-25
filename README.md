@@ -1,8 +1,13 @@
 # 新生安全教育脚本(安全微伴脚本，麦课在线教育脚本, weiban.mycourse.cn脚本)
 
+# 原作者：[Jarden Pan](https://github.com/panjd123)，由lenzh在原本的仅挂课功能升级而来。
+
 ### Installation
 
+使用前请确保你的电脑安装了git和python。如果没有git，你可以手动复制仓库源码。但是一定要安装python！！！
+
 ```bash
+git clone git@github.com:Lenzhzh/fuck-weiban.git
 pip install playwright tqdm
 playwright install
 ```
@@ -12,20 +17,34 @@ playwright install
 - Windows: `set PLAYWRIGHT_DOWNLOAD_HOST=https://npmmirror.com/mirrors/playwright`
 - Mac/Linux: `export PLAYWRIGHT_DOWNLOAD_HOST=https://npmmirror.com/mirrors/playwright`
 
-### Run
+如果你的电脑（Windows系统下）提示  `playwright` 不是一个命令，可以采用以下命令：
 
 ```bash
-python main.py
+python -m playwright install
 ```
 
-1. 运行后会弹出一个浏览器，先不要操作
-2. 观察终端，等待其输出"xxxx，按任意键开始..."字样的指示后再开始操作
-3. 按照指示操作后，回到终端，输入回车
-4. 等待脚本自动结束
+### Run
+
+直接运行对应的python文件。如果你想挂课＋考试，可以运行 `fuck_weiban_with_exam.py`.
+
+对于挂课：
+
+  1. 运行后会弹出一个浏览器，先不要操作
+  2. 观察终端，等待其输出"xxxx，按任意键开始..."字样的指示后再开始操作
+  3. 按照指示操作后，回到终端，输入回车
+  4. 等待脚本自动结束
+
+对于挂考试：
+
+  1. 运行同上挂课。
+  2. 对于次数不多的考试不建议使用该软件，因为软件会通过多次乱写凑题库来得出答案。
+  3. 第一次和第二次提交可能低分，经过我个人经验第三次提交可以做到满分。考试能自己做还是自己做~
+  4. 最后，诚信考试，诚信考试，诚信考试！！！ ~~（我有什么资格说这句话）~~
 
 ### 参考资料
 
 [利用js快速完成大学生新生安全教育课程 by Honyelchak](https://blog.csdn.net/m0_38072683/article/details/118878085)
+[油叉挂考试脚本](https://greasyfork.org/zh-CN/scripts/544879-%E5%AE%89%E5%85%A8%E5%BE%AE%E4%BC%B4-2025-08-%E5%8F%AF%E5%88%B7%E8%AF%BE%E7%A8%8B-by-%E6%B5%A9%E5%8A%AB%E8%80%8512345-modified-by-houtar/code)
 
 ### 提醒
 
