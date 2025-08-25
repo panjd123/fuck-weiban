@@ -11,7 +11,6 @@ STATE_FILE = "state.json"
 def millisecond_countdown(total_seconds: float, update_interval: float = 0.02):
     total_steps = int(total_seconds / update_interval)
     start_time = time.monotonic()
-
     with tqdm(total=total_steps, desc="等待中", bar_format="{desc}|{bar}| {postfix}", leave=False) as pbar:
         for i in range(total_steps):
             elapsed_time = min(time.monotonic() - start_time, total_seconds)
@@ -94,7 +93,6 @@ def find_course_cards(page, module_element):
         course_items = content_area.first.locator("li.img-texts-item")
         course_items.first.wait_for()
         cards = []
-
         for i in range(course_items.count()):
             item = course_items.nth(i)
             try:
@@ -175,14 +173,12 @@ def main():
         context = browser.new_context()
     page = context.new_page()
     page.goto("https://weiban.mycourse.cn/")
-
     input("\n请手动完成登录，等待页面加载完成，完成后按任意键开始...")
     context.storage_state(path=STATE_FILE)
     
     # 自动查找并进入第一个未完成的课程      
     if not find_and_enter_first_uncompleted_course(page):
         input("未能找到或进入未完成的课程\n你可以手动进入第一节未完成的课程，完成后按任意键继续...")
-
     try:
         for i in count(start=1):
             millisecond_countdown(WAITING_SECS)

@@ -2,7 +2,10 @@
 
 ### Installation
 
+使用前请确保你的电脑安装了git和python。如果没有git，你可以手动复制仓库源码。但是一定要安装python！！！
+
 ```bash
+git clone git@github.com:Lenzhzh/fuck-weiban.git
 pip install playwright tqdm
 playwright install
 ```
@@ -11,6 +14,12 @@ playwright install
 
 - Windows: `set PLAYWRIGHT_DOWNLOAD_HOST=https://npmmirror.com/mirrors/playwright`
 - Mac/Linux: `export PLAYWRIGHT_DOWNLOAD_HOST=https://npmmirror.com/mirrors/playwright`
+
+如果你的电脑（Windows系统下）提示  `playwright` 不是一个命令，可以采用以下命令：
+
+```bash
+python -m playwright install
+```
 
 ### Run
 
@@ -26,6 +35,7 @@ python main.py
 ### 参考资料
 
 [利用js快速完成大学生新生安全教育课程 by Honyelchak](https://blog.csdn.net/m0_38072683/article/details/118878085)
+[油叉挂考试脚本](https://greasyfork.org/zh-CN/scripts/544879-%E5%AE%89%E5%85%A8%E5%BE%AE%E4%BC%B4-2025-08-%E5%8F%AF%E5%88%B7%E8%AF%BE%E7%A8%8B-by-%E6%B5%A9%E5%8A%AB%E8%80%8512345-modified-by-houtar/code)
 
 ### 提醒
 
